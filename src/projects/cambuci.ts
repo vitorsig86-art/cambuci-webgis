@@ -20,7 +20,7 @@ function raster(id: string, name: string, path: string, legend?: string): Projec
 }
 
 export const cambuciProject: ProjectConfig = {
-  id: "cambuci", name: "Antonio C. Martelletto", location: "Cambuci - Rio de Janeiro", bounds: orthoBounds,
+  id: "cambuci", name: "Cardeal Map", location: "Cambuci - Rio de Janeiro", bounds: orthoBounds,
   initialCamera: {
     longitude: -41.9638881,
     latitude: -21.5335236,
