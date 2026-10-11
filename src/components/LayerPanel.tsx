@@ -1,4 +1,4 @@
-import type { ProjectConfig, ProjectLayerConfig } from "../projects/types";
+import type { PanelSubheadingConfig, ProjectConfig, ProjectLayerConfig } from "../projects/types";
 import type { ReactNode } from "react";
 import "./LayerPanel.css";
 
@@ -16,9 +16,32 @@ export function getWorkspaceSections(layers: ProjectLayerConfig[]) {
   return [
     { id: "basemap", title: "Mapa base", layers: layers.filter((layer) => layer.kind === "basemap") },
     { id: "model", title: "Modelo 3D", layers: layers.filter((layer) => layer.source.format === "3d-tiles") },
-    { id: "raster", title: "Rasters", layers: layers.filter((layer) => layer.kind !== "basemap" && (layer.source.format === "tms" || layer.source.format === "xyz")) },
-    { id: "vector", title: "Vetores", layers: layers.filter((layer) => layer.source.format === "geojson") },
-  ];
+    { id: "raster", title: "Rasters", layers: layers.filter((layer) => layer.kind !== "basemap" && layer.group !== "macro" && (layer.source.format === "tms" || layer.source.format === "xyz")) },
+    { id: "vector", title: "Vetores", layers: layers.filter((layer) => layer.source.format === "geojson" && layer.group !== "macro") },
+    { id: "macro", title: "Análise Macro", layers: layers.filter((layer) => layer.group === "macro") },
+  ].filter((section) => section.id !== "macro" || section.layers.length > 0);
+}
+
+type PanelItem =
+  | { type: "sectionLabel"; title: string }
+  | { type: "layer"; layer: ProjectLayerConfig };
+
+function getPanelItems(layers: ProjectLayerConfig[], subheadings: PanelSubheadingConfig[] = []): PanelItem[] {
+  const remaining = new Map(layers.map((layer) => [layer.id, layer]));
+  const items: PanelItem[] = [];
+  for (const subheading of subheadings) {
+    const entries: PanelItem[] = [];
+    for (const id of subheading.layerIds) {
+      const layer = remaining.get(id);
+      if (!layer) continue;
+      entries.push({ type: "layer", layer });
+      remaining.delete(id);
+    }
+    if (entries.length > 0) items.push({ type: "sectionLabel", title: subheading.title }, ...entries);
+  }
+  // Keep unlisted layers visible in the panel for future additions.
+  for (const layer of remaining.values()) items.push({ type: "layer", layer });
+  return items;
 }
 
 export function LayerPanel({ project, visible, rasterOpacities, onOpacityChange, onToggle, onClose, children }: Props) {
@@ -36,7 +59,11 @@ export function LayerPanel({ project, visible, rasterOpacities, onOpacityChange,
         <section key={section.id} className="workspace-section" aria-labelledby={`workspace-${section.id}`}>
           <h3 id={`workspace-${section.id}`}>{section.title}</h3>
           <div className="layer-list">
-            {section.layers.map((layer) => {
+            {getPanelItems(section.layers, project.panelSubheadings?.[section.id]).map((item, index) => {
+              if (item.type === "sectionLabel") {
+                return <h4 key={`subheading-${index}`} className="layer-subheading">{item.title}</h4>;
+              }
+              const layer = item.layer;
               const enabled = visible.has(layer.id);
               const opacity = rasterOpacities[layer.id] ?? 100;
               const isModel = section.id === "model";

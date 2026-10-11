@@ -22,6 +22,9 @@
 .model-layer-icon svg { width: 27px; height: 27px; }
 .model-layer-card .layer-copy small { display: block; margin-top: 3px; color: #6c7c63; font-size: 10px; line-height: 1.4; }
 
+.workspace-section .layer-subheading { margin: 8px 0 0; color: #65785b; font-size: 10px; line-height: 1.4; font-weight: 650; letter-spacing: 0.04em; }
+.workspace-section .layer-subheading:first-child { margin-top: 0; }
+
 @media (max-width: 760px) {
   .app-shell > .layer-panel { padding: 8px 12px 12px; }
   .layer-panel .workspace-project { position: sticky; top: -8px; z-index: 1; flex-shrink: 0; align-items: center; margin: -8px -12px 12px; padding: 8px 12px; background: #fafbf7; border-bottom: 1px solid #dde4d9; }
@@ -30,6 +33,8 @@
   .workspace-section { margin-bottom: 12px; }
   .workspace-section h3 { margin-bottom: 6px; }
   .workspace-section .layer-list { gap: 6px; }
+  .workspace-section .layer-subheading { margin-top: 6px; }
+  .workspace-section .layer-subheading:first-child { margin-top: 0; }
   .layer-toggle { min-height: 44px; padding: 7px 10px; gap: 9px; touch-action: manipulation; }
   .layer-card:not(.is-active) .layer-toggle { padding-top: 6px; padding-bottom: 6px; }
   .layer-toggle input[type="checkbox"] { width: 20px; height: 20px; }

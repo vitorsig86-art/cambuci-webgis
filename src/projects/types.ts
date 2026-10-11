@@ -70,11 +70,15 @@ export interface ProjectLayerConfig {
   kind: LayerKind;
   source: LayerSource;
   defaultVisible: boolean;
+  group?: "macro";
+  // Opt-in loading on first activation; existing layers keep their lifecycle.
+  lazyLoad?: boolean;
   opacityControl?: boolean;
   legend?: LegendConfig;
 }
 
 export interface VectorPopupConfig {
+  hideEmpty?: boolean;
   title?: string;
   titleProperty?: string;
   titlePrefix?: string;
@@ -87,6 +91,9 @@ export interface VectorPopupConfig {
     decimals?: number;
     format?: "integer" | "decimal";
     numberFormat?: { locale: string; decimalPlaces: number };
+    // Format numeric strings while retaining an existing unit.
+    numericText?: boolean;
+    valueFormatter?: (value: unknown, properties: Record<string, unknown>) => string;
   }[];
 }
 
@@ -107,6 +114,12 @@ export interface CameraConfig {
   roll: number;
 }
 
+// Panel-only ordering and labels; these do not affect layer loading or visibility.
+export interface PanelSubheadingConfig {
+  title: string;
+  layerIds: string[];
+}
+
 export interface ProjectConfig {
   id: string;
   name: string;
@@ -114,6 +127,7 @@ export interface ProjectConfig {
   bounds: GeographicBounds;
   initialCamera?: CameraConfig;
   layers: ProjectLayerConfig[];
+  panelSubheadings?: Record<string, PanelSubheadingConfig[]>;
   developmentTools?: { modelAlignment?: boolean; cropAuthoring?: boolean };
 }
 

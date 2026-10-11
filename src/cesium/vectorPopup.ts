@@ -39,15 +39,19 @@ export function readVectorPopup(entity: Entity | undefined, time = JulianDate.no
   const titleValue = config.titleProperty ? properties[config.titleProperty] : undefined;
   return {
     title: present(titleValue) ? `${config.titlePrefix ?? ""}${titleValue}${config.titleSuffix ?? ""}` : config.title ?? "Informações",
-    fields: config.fields.filter(field => present(properties[field.property])).map(field => {
+    fields: config.fields.filter(field => present(properties[field.property]) && (!config.hideEmpty || String(properties[field.property]).trim() !== "")).map(field => {
       const value = properties[field.property];
+      if (field.valueFormatter) return { label: field.label, value: field.valueFormatter(value, properties) };
       const decimals = field.numberFormat?.decimalPlaces ?? (field.format === "integer" ? 0 : field.decimals);
-      const formatted = typeof value === "number"
+      const numericText = field.numericText && typeof value === "string"
+        ? value.trim().match(/^([+-]?\d+(?:\.\d+)?)\s*(.*)$/) : null;
+      const numericValue = numericText ? Number(numericText[1]) : value;
+      const formatted = typeof numericValue === "number"
         ? new Intl.NumberFormat(field.numberFormat?.locale ?? "pt-BR", decimals === undefined ? {} : {
           minimumFractionDigits: decimals, maximumFractionDigits: decimals,
-        }).format(value)
+        }).format(numericValue)
         : String(value);
-      return { label: field.label, value: `${field.prefix ?? ""}${formatted}${field.suffix ?? ""}` };
+      return { label: field.label, value: `${field.prefix ?? ""}${formatted}${numericText?.[2] ? ` ${numericText[2]}` : field.suffix ?? ""}` };
     }),
   };
 }

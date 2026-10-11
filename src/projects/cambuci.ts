@@ -1,4 +1,5 @@
 import type { GeographicBounds, ProjectConfig, ProjectLayerConfig } from "./types";
+import { cambuciMacroLayers } from "./cambuciMacro";
 
 const baseUrl = "https://pub-ad150dc7fa674abe84ecb9050c9906dc.r2.dev";
 const orthoBounds: GeographicBounds = [-42.01171875, -21.57571893, -41.92382812, -21.49396356];
@@ -28,6 +29,29 @@ export const cambuciProject: ProjectConfig = {
     heading: 58.52,
     pitch: -54.11,
     roll: 360.00,
+  },
+  panelSubheadings: {
+    macro: [
+      {
+        title: "CONTEXTO TERRITORIAL",
+        layerIds: ["macro-contexto-municipal-ibge", "macro-clima"],
+      },
+      {
+        title: "MEIO FÍSICO",
+        layerIds: ["macro-geologia", "macro-geomorfologia", "macro-pedologia", "macro-vegetacao"],
+      },
+      {
+        title: "RELEVO E HIDROLOGIA",
+        layerIds: [
+          "macro-elevacao-anadem",
+          "macro-curvas-anadem",
+          "macro-limite-microbacias-anadem",
+          "macro-microbacias-anadem",
+          "macro-drenagem-ana",
+          "macro-drenagem-anadem",
+        ],
+      },
+    ],
   },
   layers: [
     {
@@ -106,5 +130,6 @@ export const cambuciProject: ProjectConfig = {
         },
       },
     },
+    ...cambuciMacroLayers,
   ],
 };
