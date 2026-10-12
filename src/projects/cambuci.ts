@@ -70,7 +70,10 @@ export const cambuciProject: ProjectConfig = {
     {
       id: "perimetro", name: "Perímetro dos imóveis", description: "Limites dos imóveis", kind: "property-boundary", defaultVisible: true,
       source: { format: "geojson", url: `${baseUrl}/geojson/peri_imoveis.geojson`, autoZoom: false,
-        style: { stroke: "#ff3030", strokeWidth: 4, fill: "#00000000", clampToGround: true, zIndex: 30 } },
+        style: { stroke: "#ff3030", strokeWidth: 4, fill: "#00000000", clampToGround: true, zIndex: 30 },
+        popup: { title: "Perímetro do imóvel", fields: [
+          { property: "ENCLOSED_AREA", label: "Área", numericText: true, numberFormat: { locale: "pt-BR", decimalPlaces: 3 } },
+        ] } },
     },
     {
       id: "curvas", name: "Curvas de nível 3 m", description: "Cotas em metros, intervalo de 3 m", kind: "contours", defaultVisible: false,
