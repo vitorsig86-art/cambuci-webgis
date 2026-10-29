@@ -11,8 +11,9 @@ function raster(id: string, name: string, path: string, legend?: string): Projec
     id, name, description: id === "declividade" ? "Declividade em graus" : name, kind: "raster",
     source: {
       format: "tms", url: `${baseUrl}/${path}/{z}/{x}/{reverseY}.png`,
-      credit: "Cardeal Map", bounds: ortho ? orthoBounds : terrainBounds,
-      minimumLevel: ortho ? 13 : 11, maximumLevel: ortho ? 22 : 20,
+      // orto2 shares the terrain export grid: zoom 11-20 over terrainBounds.
+      credit: "Cardeal Map", bounds: terrainBounds,
+      minimumLevel: 11, maximumLevel: 20,
       tileWidth: 256, tileHeight: 256,
     },
     defaultVisible: ortho,
@@ -61,7 +62,7 @@ export const cambuciProject: ProjectConfig = {
         credit: '<a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener noreferrer">© OpenStreetMap contributors</a>',
       } }, defaultVisible: true,
     },
-    raster("ortomosaico", "Ortomosaico", "orto"),
+    raster("ortomosaico", "Ortomosaico", "orto2"),
     raster("mdt", "Modelo Digital do Terreno", "mdt", "mdt_tab.png"),
     raster("mds", "Modelo Digital da Superfície", "mds", "mds_tab.png"),
     // These original legend images are still missing; the generic image legend hides failed loads.
