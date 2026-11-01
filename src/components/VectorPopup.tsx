@@ -73,11 +73,11 @@ export function VectorPopup({ viewer }: { viewer: Viewer | null }) {
   }, [popup, anchor, viewer]);
   if (!popup) return null;
   return <section ref={popupRef} className="vector-popup" style={placement ?? { visibility: "hidden" }} aria-label="Informações da feição" aria-live="polite">
-    <button type="button" aria-label="Fechar informações" onClick={() => {
+    <button type="button" className="vector-popup-close" aria-label="Fechar informações" onClick={() => {
       if (viewer && !viewer.isDestroyed()) viewer.selectedEntity = undefined;
       setPopup(null);
     }}>×</button>
-    <strong>{popup.title}</strong>
-    {popup.fields.map((field, index) => <p key={index}>{field.label && `${field.label}: `}{field.value}</p>)}
+    <strong className="vector-popup-title">{popup.title}</strong>
+    {popup.fields.map((field, index) => <p key={index}>{field.label && <span className="vector-popup-label">{field.label}</span>}<span>{field.value}</span></p>)}
   </section>;
 }

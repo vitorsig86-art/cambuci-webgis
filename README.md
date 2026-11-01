@@ -16,10 +16,11 @@ campos vazios. Configure as variáveis no ambiente de build para implantação.
 
 ## Configuração
 
-`src/projects/cambuci.ts` concentra as URLs, bounds, níveis de zoom, estilos e
-popups. São cinco rasters TMS Web Mercator com `{reverseY}`, quatro GeoJSONs
-e um modelo ion. Não há Análise Macro, seletor de projetos ou clipping.
-Somente mapa base e ortomosaico iniciam visíveis.
+`src/projects/cambuci.ts` e `src/projects/cambuciMacro.ts` concentram as URLs,
+bounds, níveis de zoom, estilos e popups. A configuração atual tem 23 camadas:
+mapa base, seis rasters TMS Web Mercator com `{reverseY}`, quinze GeoJSONs
+e um modelo ion com seu recorte configurado. Inclui Análise Macro;
+não há seletor de projetos. Mapa base, ortomosaico e perímetro iniciam visíveis.
 Declividade é expressa em graus; não há classificação EMBRAPA em porcentagem.
 Microbacias filtra Polygon e recebe cores estáveis por STREAM_ID.
 Nenhuma unidade foi presumida para DRAIN_AREA, IN_FLOW ou OUT_FLOW.
@@ -33,6 +34,24 @@ A câmera definitiva está definida em `initialCamera` em `src/projects/cambuci.
 (ângulos em graus, altura em metros). A abertura e o botão Home usam essa mesma
 configuração por meio de `createCameraView` em `src/cesium/projectCamera.ts`.
 
-Medições, GPS client-side, sidebar/drawer, opacidade, atribuição e recuperação
-TMS 404/410 conservam a arquitetura do template. Os exemplos neutros usados
+Medições, navegação/Home, opacidade, atribuição e recuperação
+TMS 404/410 conservam a arquitetura existente. Os exemplos neutros usados
 pelos checks genéricos ficam somente em scripts/fixtures; não entram no WebGIS.
+
+## Interface Cardeal Map
+
+A apresentação usa o tema v3 do template de referência: `src/theme.css`,
+Figtree e Caprasimo locais (licenças em `public/fonts`), ícones compartilhados,
+cabeçalho de 52 px, painel recolhível, switches e coluna de ferramentas.
+No celular, Camadas abre um painel inferior de duas alturas; Medir e Legenda
+selecionam a sobreposição do mapa. As legendas mantêm expansão por toque.
+Não foram adicionados GPS, campanhas temporais, comparação ou modo 2D.
+Viewer, hooks geográficos, configuração territorial e fontes permanecem intactos.
+
+Validação da modernização: `npm.cmd ci`, `npm.cmd run typecheck`,
+`npm.cmd run check` e `npm.cmd run build -- --configLoader runner` passaram.
+Dev e preview responderam HTTP 200. Fontes R2 foram verificadas por HEAD com
+CORS liberado, incluindo amostras dos rasters; isso não valida o georreferenciamento
+nem o carregamento completo. A inspeção visual desktop/tablet/mobile, o console
+e os serviços ion ainda precisam ser verificados no navegador: o acesso de
+automação ao navegador estava indisponível durante esta execução.

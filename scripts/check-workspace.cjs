@@ -28,7 +28,7 @@ const project = { ...templateProject, layers: [...templateProject.layers.filter(
 const { LayerPanel, getWorkspaceSections } = load("src/components/LayerPanel.tsx");
 const sections = getWorkspaceSections(project.layers);
 assert.equal(JSON.stringify(sections.map((section) => [section.title, section.layers.length])), JSON.stringify([
-  ["Mapa base", 1], ["Rasters de drone", 2], ["Vetores de drone", 1], ["Modelo 3D", 1],
+  ["Mapa base", 1], ["Modelo 3D", 1], ["Rasters", 2], ["Vetores", 1],
 ]));
 assert.equal(new Set(sections.flatMap((section) => section.layers.map((layer) => layer.id))).size, project.layers.length);
 let visible = new Set(project.layers.filter((layer) => layer.defaultVisible).map((layer) => layer.id));
@@ -78,7 +78,7 @@ for (const layer of sections.find((section) => section.id === "raster").layers) 
   const updatedRow = elements(render()).find(({ node }) => node.key === layer.id).node;
   assert.match(renderToStaticMarkup(updatedRow), /65%/);
 }
-for (const layer of [...sections[0].layers, ...sections[2].layers, ...sections[3].layers]) {
+for (const layer of sections.filter(section => section.id !== "raster").flatMap(section => section.layers)) {
   const row = elements(render()).find(({ node }) => node.key === layer.id).node;
   assert.ok(!elements(row).some(({ node }) => node.type === "input" && node.props.type === "range"));
 }
