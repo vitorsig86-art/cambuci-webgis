@@ -129,6 +129,15 @@ export interface ProjectConfig {
   layers: ProjectLayerConfig[];
   panelSubheadings?: Record<string, PanelSubheadingConfig[]>;
   developmentTools?: { modelAlignment?: boolean; cropAuthoring?: boolean };
+  panel?: PanelConfig;
+}
+
+// Layer panel presentation. Every option keeps the current behavior when omitted.
+export interface PanelConfig {
+  // Mobile only: start with the layer sheet open ("Camadas"). Default false:
+  // only the map and the bottom bar until "Camadas" is tapped. Desktop is
+  // unaffected.
+  mobileStartOpen?: boolean;
 }
 
 export type LayerStatus = "idle" | "loading" | "ready" | "fallback" | "error";

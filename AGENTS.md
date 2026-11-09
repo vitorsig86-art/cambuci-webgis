@@ -2,6 +2,10 @@
 
 This is the Antonio C. Martelletto WebGIS in Cambuci - Rio de Janeiro: React, TypeScript, Vite and CesiumJS. The source cardeal-map-template is read-only; modify only this independent project.
 
+## Template origin
+
+Cloned from cardeal-map-template v2.0.0 (commit `9144d32`, 2026-10-04). Since then, ported by hand: part of the v3 interface (theme, fonts, icons, header, "Sobre os dados", mobile bottom bar; commit `02c9981`) and `panel.mobileStartOpen` (template `7e32817`). When bringing more template changes, read the template CHANGELOG from v2.0.0 and skip what is listed here.
+
 ## Structure
 
 - src/projects/: property-specific configuration, source URLs, bounds, zoom levels, labels, legends and opening/Home camera. cambuci.ts is the editable entry point.

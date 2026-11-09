@@ -7,6 +7,7 @@ import { MeasurementToolbar } from "./components/MeasurementToolbar";
 import { VectorPopup } from "./components/VectorPopup";
 import { Icon } from "./components/icons";
 import { AboutDialog } from "./components/AboutDialog";
+import { initialMobileState } from "./components/mobileTabs";
 
 import { useCesiumViewer } from "./hooks/useCesiumViewer";
 import { useProjectLayers } from "./hooks/useProjectLayers";
@@ -21,7 +22,9 @@ function defaultVisibility(project: ProjectConfig) {
 export function App() {
   const project = projects[0];
   const [visible, setVisible] = useState(() => defaultVisibility(projects[0]));
-  const [panelOpen, setPanelOpen] = useState(false);
+  // Mobile opens with only the map and the bottom bar unless
+  // panel.mobileStartOpen is true. Desktop ignores panelOpen.
+  const [panelOpen, setPanelOpen] = useState(() => initialMobileState(project.panel?.mobileStartOpen ?? false).panelOpen);
   const [panelCollapsed, setPanelCollapsed] = useState(false);
   const [sheetHigh, setSheetHigh] = useState(false);
   const [legendOpen, setLegendOpen] = useState(true);
