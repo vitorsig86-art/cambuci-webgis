@@ -5,6 +5,30 @@ const baseUrl = "https://pub-ad150dc7fa674abe84ecb9050c9906dc.r2.dev";
 const orthoBounds: GeographicBounds = [-42.01171875, -21.57571893, -41.92382812, -21.49396356];
 const terrainBounds: GeographicBounds = [-42.01171875, -21.61657934, -41.83593750, -21.45306863];
 
+// Área de estudo com a simulação 3D, no padrão da Fazenda Fundão. O botão abre a
+// simulação sobre o mapa sem mover a câmera (flyTo false) e, ao fechar, a câmera
+// fica onde estava (onClose "keep"); a origem está liberada em embeddedPages.
+// Ligada na abertura do desktop e desligada na do celular. O popup só abre ao
+// clicar ou tocar no polígono. Primeira da seção Vetores (ordem do array) e
+// desenhada acima dos outros vetores (zIndex 35; o maior dos demais é 30).
+const simulationUrl = "https://simulacaocambuci.vercel.app/";
+const areaEstudo: ProjectLayerConfig = {
+  id: "area-estudo", name: "Área de Estudo", description: "Simulação 3D", kind: "vector",
+  defaultVisible: true, defaultVisibleMobile: false, opacityControl: true,
+  source: {
+    format: "geojson", url: `${baseUrl}/geojson/area_estudo_simu.geojson`, autoZoom: false,
+    style: { stroke: "#FF6A00", strokeWidth: 3, fill: "#FF6A00", fillOpacity: 0.18, clampToGround: true, zIndex: 35 },
+    popup: {
+      titleProperty: "nome",
+      fields: [
+        { property: "area_ha", label: "Área", decimals: 2, suffix: " ha" },
+        { property: "perimetro_km", label: "Perímetro", decimals: 2, suffix: " km" },
+      ],
+      actions: [{ label: "Entrar na simulação 3D", url: simulationUrl, flyTo: false, onClose: "keep" }],
+    },
+  },
+};
+
 function raster(id: string, name: string, path: string, legend?: string): ProjectLayerConfig {
   const ortho = id === "ortomosaico";
   return {
@@ -31,6 +55,8 @@ export const cambuciProject: ProjectConfig = {
     pitch: -54.11,
     roll: 360.00,
   },
+  // Páginas que os popups podem abrir sobre o mapa (simulação 3D da área de estudo).
+  embeddedPages: { allowedOrigins: [new URL(simulationUrl).origin] },
   panelSubheadings: {
     macro: [
       {
@@ -68,6 +94,7 @@ export const cambuciProject: ProjectConfig = {
     // These original legend images are still missing; the generic image legend hides failed loads.
     raster("declividade", "Declividade", "decli", "decli_tab.png"),
     raster("orientacao-solar", "Orientação solar", "aspect", "aspect_tab.png"),
+    areaEstudo,
     {
       id: "perimetro", name: "Perímetro dos imóveis", description: "Limites dos imóveis", kind: "property-boundary", defaultVisible: true,
       source: { format: "geojson", url: `${baseUrl}/geojson/peri_imoveis.geojson`, autoZoom: false,

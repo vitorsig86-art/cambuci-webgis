@@ -70,6 +70,8 @@ export interface ProjectLayerConfig {
   kind: LayerKind;
   source: LayerSource;
   defaultVisible: boolean;
+  // Visibility at the opening in the mobile layout (max-width: 760px). Default: defaultVisible.
+  defaultVisibleMobile?: boolean;
   group?: "macro";
   // Opt-in loading on first activation; existing layers keep their lifecycle.
   lazyLoad?: boolean;
@@ -77,7 +79,26 @@ export interface ProjectLayerConfig {
   legend?: LegendConfig;
 }
 
+// Popup button that opens an external page, e.g. a 3D simulation. Fixed `url`
+// or a feature property (`urlProperty`). Only https URLs whose origin is
+// listed in ProjectConfig.embeddedPages.allowedOrigins are offered.
+// Ported from cardeal-map-template (3.0.0 actions, 3.1.0 flyTo/onClose).
+export interface VectorPopupAction {
+  label: string;
+  url?: string;
+  urlProperty?: string;
+  // "overlay" (default) opens the page over the map; "tab" opens a new tab.
+  target?: "overlay" | "tab";
+  // Overlay only: false (default) keeps the camera, true flies to the feature,
+  // "home" flies to the Home view before opening.
+  flyTo?: boolean | "home";
+  // Overlay only, on close: "keep" (default) puts the camera back exactly where it
+  // was when the page opened, without animation; "home" jumps to initialCamera.
+  onClose?: "keep" | "home";
+}
+
 export interface VectorPopupConfig {
+  actions?: VectorPopupAction[];
   hideEmpty?: boolean;
   title?: string;
   titleProperty?: string;
@@ -130,6 +151,8 @@ export interface ProjectConfig {
   panelSubheadings?: Record<string, PanelSubheadingConfig[]>;
   developmentTools?: { modelAlignment?: boolean; cropAuthoring?: boolean };
   panel?: PanelConfig;
+  // Origins allowed for popup actions (exact scheme + host + port, https only).
+  embeddedPages?: { allowedOrigins: string[] };
 }
 
 // Layer panel presentation. Every option keeps the current behavior when omitted.

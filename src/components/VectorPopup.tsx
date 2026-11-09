@@ -1,10 +1,20 @@
 import { useEffect, useLayoutEffect, useRef, useState } from "react";
 import { Cartesian2, Entity, type Viewer } from "cesium";
-import { readVectorPopup, resolveVectorPopupSelection } from "../cesium/vectorPopup";
+import { readVectorPopup, resolveVectorPopupSelection, type VectorPopupActionLink } from "../cesium/vectorPopup";
 import { placePopup, type ScreenPoint } from "./popupPosition";
 import "./VectorPopup.css";
 
-export function VectorPopup({ viewer }: { viewer: Viewer | null }) {
+const NO_ORIGINS: readonly string[] = [];
+
+interface Props {
+  viewer: Viewer | null;
+  // ProjectConfig.embeddedPages.allowedOrigins; without it no action button appears.
+  allowedOrigins?: readonly string[];
+  onOpenPage?: (page: { action: VectorPopupActionLink; title: string; entity: Entity }) => void;
+}
+
+// The popup opens only on click/tap; nothing opens it on its own.
+export function VectorPopup({ viewer, allowedOrigins = NO_ORIGINS, onOpenPage }: Props) {
   const [popup, setPopup] = useState<ReturnType<typeof readVectorPopup>>(null);
   const popupRef = useRef<HTMLElement>(null);
   const clickRef = useRef<ScreenPoint | null>(null);
@@ -14,7 +24,7 @@ export function VectorPopup({ viewer }: { viewer: Viewer | null }) {
     if (!viewer || viewer.isDestroyed()) return;
     const canvas = viewer.canvas;
     const update = () => {
-      const next = readVectorPopup(viewer.selectedEntity, viewer.clock.currentTime);
+      const next = readVectorPopup(viewer.selectedEntity, viewer.clock.currentTime, allowedOrigins);
       setPopup(current => JSON.stringify(current) === JSON.stringify(next) ? current : next);
       setAnchor(clickRef.current);
     };
@@ -42,7 +52,7 @@ export function VectorPopup({ viewer }: { viewer: Viewer | null }) {
       canvas.removeEventListener("pointerdown", rememberPoint);
       canvas.removeEventListener("click", clicked);
     };
-  }, [viewer]);
+  }, [viewer, allowedOrigins]);
 
   useLayoutEffect(() => {
     if (!popup || !viewer || viewer.isDestroyed() || !popupRef.current) return;
@@ -79,5 +89,13 @@ export function VectorPopup({ viewer }: { viewer: Viewer | null }) {
     }}>×</button>
     <strong className="vector-popup-title">{popup.title}</strong>
     {popup.fields.map((field, index) => <p key={index}>{field.label && <span className="vector-popup-label">{field.label}</span>}<span>{field.value}</span></p>)}
+    {popup.actions.length > 0 && <div className="vector-popup-actions">
+      {popup.actions.map(action => action.target === "tab"
+        ? <a key={action.url + action.label} className="vector-popup-action" href={action.url} target="_blank" rel="noopener noreferrer">{action.label}</a>
+        : <button key={action.url + action.label} type="button" className="vector-popup-action" onClick={() => {
+          const entity = viewer && !viewer.isDestroyed() ? viewer.selectedEntity : undefined;
+          if (entity && onOpenPage) onOpenPage({ action, title: popup.title, entity });
+        }}>{action.label}</button>)}
+    </div>}
   </section>;
 }

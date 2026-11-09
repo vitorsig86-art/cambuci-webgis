@@ -27,3 +27,26 @@ export function applyProjectCamera(viewer: Viewer, project: ProjectConfig, durat
   }
   viewer.scene.requestRender();
 }
+
+// Exact camera pose, to put the camera back after an overlay (embedded page).
+// Ported from cardeal-map-template 3.1.0.
+export interface CameraSnapshot { position: Cartesian3; heading: number; pitch: number; roll: number }
+
+export function captureCamera(viewer: Viewer): CameraSnapshot {
+  const { camera } = viewer;
+  return { position: Cartesian3.clone(camera.positionWC), heading: camera.heading, pitch: camera.pitch, roll: camera.roll };
+}
+
+// Restores the pose without animation, only when something moved it. Returns true when it restored.
+export function restoreCamera(viewer: Viewer, snapshot: CameraSnapshot): boolean {
+  if (viewer.isDestroyed()) return false;
+  const { camera } = viewer;
+  camera.cancelFlight();
+  const same = Cartesian3.equalsEpsilon(camera.positionWC, snapshot.position, 0, 1e-3)
+    && [[camera.heading, snapshot.heading], [camera.pitch, snapshot.pitch], [camera.roll, snapshot.roll]]
+      .every(([a, b]) => CesiumMath.equalsEpsilon(CesiumMath.negativePiToPi(a - b), 0, 1e-6));
+  if (same) return false;
+  camera.setView({ destination: snapshot.position, orientation: { heading: snapshot.heading, pitch: snapshot.pitch, roll: snapshot.roll } });
+  viewer.scene.requestRender();
+  return true;
+}
